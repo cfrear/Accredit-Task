@@ -4,9 +4,15 @@
 
 <main>
     <section class="row" aria-labelledby="aspnetTitle">
-    <div>
-        <input id="username" type="text" placeholder="Github Username"/>
-        <input id="search" type="button" value="Search"/>
-    </div>
+        <div>
+            @using (Html.BeginForm("SearchUser", "Home", FormMethod.Post))
+            {
+                <p>Github Username: </p>
+                @Html.TextBox("username")
+
+                <input id="search" name="btnSearch" type="submit" value="Search" onclick="location.href = '@Url.Action("SearchUser", "Home")'" />
+            }
+
+        </div>
     </section>
 </main>

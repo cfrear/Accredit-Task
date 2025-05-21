@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Accredit_Task.Models;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -18,6 +22,38 @@ namespace Accredit_Task.Controllers
             ViewBag.Message = "Your application description page.";
 
             return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SearchUser(string username)
+        {
+            //https://api.github.com/users/USERNAME
+
+            string apiUrl = "https://api.github.com/users/" + username;
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(apiUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
+
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var json = JObject.Parse(data);
+
+                    User user = new User();
+                    user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
+
+                    ViewBag.Message = user;
+                }
+                
+            }
+
+            return View("Results");
         }
     }
 }
