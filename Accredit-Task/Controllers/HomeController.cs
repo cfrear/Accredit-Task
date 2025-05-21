@@ -48,12 +48,10 @@ namespace Accredit_Task.Controllers
                     User user = new User();
                     user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
 
-                    ViewBag.Message = user;
-                }
-                
+                    return View("Results", user);
+                }                
             }
-
-            return View("Results");
+            return View("Error");
         }
     }
 }
