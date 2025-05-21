@@ -1,7 +1,5 @@
 ﻿@model Accredit_Task.Models.User
 
-@*@{ ViewBag.Title = "Results";  }*@
-
 <main aria-labelledby="title">
     <h2 id="title">@Model.Username</h2>
     <h3 id="title">@Model.Location</h3>
@@ -9,5 +7,19 @@
     <img src="@Model.Avatar" />
 
     <p>Repos:</p>
-
+    @foreach (var repo in Model.Repos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => repo.Name)
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.ID })*@
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => repo.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => repo.Stargazer_count)
+                </td>
+            </tr>
+        }
 </main>

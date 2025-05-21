@@ -22,6 +22,6 @@ namespace Accredit_Task.Models
 
         [JsonProperty("repos_url")]
         public string ReposUrl { get; set; }
-        //public List<Repo> Repos { get; set; }
+        public List<Repo> Repos { get; set; }
     }
 }

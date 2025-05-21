@@ -48,10 +48,39 @@ namespace Accredit_Task.Controllers
                     User user = new User();
                     user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
 
+                    //Get Repos from URL
+                    List<Repo> repos = new List<Repo>();
+                    repos = GetRepos(user.ReposUrl);
+
                     return View("Results", user);
                 }                
             }
             return View("Error");
+        }
+
+        public async Task<List<Repo>> GetRepos(string repoUrl)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(repoUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
+
+                HttpResponseMessage response = await client.GetAsync(repoUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    List<Repo> repos = new List<Repo> { };
+
+                    repos = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Repo>>(data);
+
+                    return repos;
+                }
+            }
+            //return View("Error");
+            return null;
         }
     }
 }
