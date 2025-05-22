@@ -58,8 +58,8 @@ namespace Accredit_Task.Controllers
                     //    user.Repos.Add(repos[i]);
                     //}
 
-                    user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12 });
-                    user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22 });
+                    user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12, Link = "https://github.com/cfrear/Accredit-Task" });
+                    user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22, Link = "https://github.com/cfrear/VCC-API" });
 
                     return View("Results", user);
                 }                
