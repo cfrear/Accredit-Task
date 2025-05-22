@@ -42,20 +42,32 @@ namespace Accredit_Task.Controllers
                     user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
 
                     //Get Repos from URL
-                    //List<Repo> repos = new List<Repo>();
-                    //repos = GetRepos(user.ReposUrl).Result;
-                    //repos.OrderBy(x => x.Stargazer_count).ToList();
+                    List<Repo> repos = new List<Repo>();
+                    repos = GetRepos(user.ReposUrl).Result;
 
-                    //for (int i = 0; i <= 5; i++)
-                    //{
-                    //    user.Repos.Add(repos[i]);
-                    //}
+                    if (repos is null)
+                    {
+                        TempData["Errormsg"] = $"Error fetching repos list for user {username}.";
+                        return View("Error");
+                    }
 
-                    user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12, Link = "https://github.com/cfrear/Accredit-Task" });
-                    user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22, Link = "https://github.com/cfrear/VCC-API" });
+                    //Get top 5 repos by stargazer count
+                    repos.OrderBy(x => x.Stargazer_count).ToList();
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        user.Repos.Add(repos[i]);
+                    }
+
+                    //user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12, Link = "https://github.com/cfrear/Accredit-Task" });
+                    //user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22, Link = "https://github.com/cfrear/VCC-API" });
 
                     return View("Results", user);
-                }                
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    TempData["Errormsg"] = "User could not be found.";
+                    return View("Error");
+                }
             }
             return View("Error");
         }
@@ -82,7 +94,6 @@ namespace Accredit_Task.Controllers
                     return repos;
                 }
             }
-            //return View("Error");
             return null;
         }
     }

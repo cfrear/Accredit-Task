@@ -5,12 +5,13 @@
 <main>
     <section class="row" aria-labelledby="aspnetTitle">
         <div>
+
             @using (Html.BeginForm("SearchUser", "Home", FormMethod.Post))
             {
                 <p>Github Username: </p>
                 @Html.TextBox("username")
 
-                <input id="search" name="btnSearch" type="submit" value="Search" onclick="location.href = '@Url.Action("SearchUser", "Home")'" />
+                <input id="search" name="btnSearch" type="submit" value="Search" required onclick="location.href = '@Url.Action("SearchUser", "Home")'" />
             }
 
         </div>
