@@ -43,10 +43,11 @@ namespace Accredit_Task.Controllers
             }
 
             //Get top 5 repos by stargazer count
-            repos.OrderBy(x => x.Stargazer_count).ToList();
-            for (int i = 0; i <= 4; i++)
+            var sortedRepos = repos.OrderByDescending(x => x.Stargazer_count).ToList();
+            int reposToList = Math.Min(sortedRepos.Count, 5);
+            for (int i = 0; i < reposToList; i++)
             {
-                user.Repos.Add(repos[i]);
+                user.Repos.Add(sortedRepos[i]);
             }
 
             return View("Results", user);
