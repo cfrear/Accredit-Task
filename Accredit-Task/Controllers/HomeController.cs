@@ -20,10 +20,40 @@ namespace Accredit_Task.Controllers
         [HttpPost]
         public async Task<ActionResult> SearchUser(string username)
         {
-            //https://api.github.com/users/USERNAME
+            string apiUrl = "https://api.github.com/users/";
 
-            string apiUrl = "https://api.github.com/users/" + username;
+            //Get user
+            User user = new User();
+            user = await GetUser(apiUrl, username);
 
+            if (user is null)
+            {
+                TempData["Errormsg"] = $"Error fetching data for user {username}.";
+                return View("Error");
+            }
+
+            //Get Repos from URL
+            List<Repo> repos = new List<Repo>();
+            repos = GetRepos(user.ReposUrl).Result;
+
+            if (repos is null)
+            {
+                TempData["Errormsg"] = $"Error fetching repos list for user {username}.";
+                return View("Error");
+            }
+
+            //Get top 5 repos by stargazer count
+            repos.OrderBy(x => x.Stargazer_count).ToList();
+            for (int i = 0; i <= 4; i++)
+            {
+                user.Repos.Add(repos[i]);
+            }
+
+            return View("Results", user);
+        }
+
+        public async Task<User> GetUser(string apiUrl, string username)
+        {
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);
@@ -31,45 +61,22 @@ namespace Accredit_Task.Controllers
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
 
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                HttpResponseMessage response = client.GetAsync(username).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
-                    //var json = JObject.Parse(data);
 
                     User user = new User();
                     user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
-
-                    //Get Repos from URL
-                    List<Repo> repos = new List<Repo>();
-                    repos = GetRepos(user.ReposUrl).Result;
-
-                    if (repos is null)
-                    {
-                        TempData["Errormsg"] = $"Error fetching repos list for user {username}.";
-                        return View("Error");
-                    }
-
-                    //Get top 5 repos by stargazer count
-                    repos.OrderBy(x => x.Stargazer_count).ToList();
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        user.Repos.Add(repos[i]);
-                    }
-
-                    //user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12, Link = "https://github.com/cfrear/Accredit-Task" });
-                    //user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22, Link = "https://github.com/cfrear/VCC-API" });
-
-                    return View("Results", user);
+                    return user;
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    TempData["Errormsg"] = "User could not be found.";
-                    return View("Error");
+                    return null;
                 }
+                return null;
             }
-            return View("Error");
         }
 
         public async Task<List<Repo>> GetRepos(string repoUrl)
@@ -80,9 +87,11 @@ namespace Accredit_Task.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
-                
 
-                HttpResponseMessage response = await client.GetAsync(repoUrl);
+                //The task specifically asks me to pull the repos_url out of the response and use it here, so I have - but I don't like it.
+                //Given that the repos_url is the same at the user url with "/repos" at the end, I would prefer to construct my request url in the same way as in the GetUser() method
+                //and then append "/repos" in the GetAsync below.
+                HttpResponseMessage response = client.GetAsync("").Result; 
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -94,6 +103,7 @@ namespace Accredit_Task.Controllers
                     return repos;
                 }
             }
+
             return null;
         }
     }
