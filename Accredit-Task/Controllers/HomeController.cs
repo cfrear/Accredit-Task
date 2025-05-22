@@ -17,13 +17,6 @@ namespace Accredit_Task.Controllers
             return View();
         }
 
-        public ActionResult Results()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
         [HttpPost]
         public async Task<ActionResult> SearchUser(string username)
         {
