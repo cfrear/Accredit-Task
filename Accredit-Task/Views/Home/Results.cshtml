@@ -6,20 +6,21 @@
 
     <img src="@Model.Avatar" />
 
-    <p>Repos:</p>
-    @foreach (var repo in Model.Repos)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => repo.Name)
-                    @*@Html.ActionLink("Edit", "Edit", new { id = item.ID })*@
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => repo.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => repo.Stargazer_count)
-                </td>
-            </tr>
-        }
 </main>
+
+<p>Repos:</p>
+@foreach (var repo in Model.Repos)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => repo.Name)
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => repo.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => repo.Stargazer_count)
+        </td>
+    </tr>
+}

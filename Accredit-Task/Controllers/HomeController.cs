@@ -43,14 +43,23 @@ namespace Accredit_Task.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
-                    var json = JObject.Parse(data);
+                    //var json = JObject.Parse(data);
 
                     User user = new User();
                     user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data);
 
                     //Get Repos from URL
-                    List<Repo> repos = new List<Repo>();
-                    repos = GetRepos(user.ReposUrl);
+                    //List<Repo> repos = new List<Repo>();
+                    //repos = GetRepos(user.ReposUrl).Result;
+                    //repos.OrderBy(x => x.Stargazer_count).ToList();
+
+                    //for (int i = 0; i <= 5; i++)
+                    //{
+                    //    user.Repos.Add(repos[i]);
+                    //}
+
+                    user.Repos.Add(new Repo { Id = 1, Name = "repoName", Description = "desc", Stargazer_count = 12 });
+                    user.Repos.Add(new Repo { Id = 2, Name = "repo2Name", Description = "desc", Stargazer_count = 22 });
 
                     return View("Results", user);
                 }                
@@ -66,6 +75,7 @@ namespace Accredit_Task.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
                 client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "http://developer.github.com/v3/#user-agent-required");
+                
 
                 HttpResponseMessage response = await client.GetAsync(repoUrl);
 
